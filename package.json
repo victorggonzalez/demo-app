@@ -15,7 +15,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject", 
+    "deploy:live": "npm run build && aws s3 sync dist/s3://demo-app.test.com --delete && npm run-script invalidate-cache:live",
+    "invalidate-cache:live": "aws configure set preview.cloudfront true && aws cloudfront create-invalidation --distribution-id <CLOUDFRONT_DISTRIBUTION_ID> --paths '/*'"
   },
   "eslintConfig": {
     "extends": [
