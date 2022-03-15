@@ -54,6 +54,14 @@ jobs:
         node-version: '14'
         check-latest: true
 
+    - name: Create env file
+      run: |
+        touch .env.dev
+        echo REACT_APP_GRAASP_DOMAIN=dev.graasp >> .env.dev
+        echo REACT_APP_GRAASP_APP_ID=${{ secrets.APP_ID }} >> .env.dev
+        echo REACT_APP_MOCK_API=false >> .env.dev
+        cat .env
+
     - name: Build
       id: build-image
       run: |
