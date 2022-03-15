@@ -60,7 +60,7 @@ jobs:
         echo REACT_APP_GRAASP_DOMAIN=dev.graasp >> .env.dev
         echo REACT_APP_GRAASP_APP_ID=${{ secrets.APP_ID }} >> .env.dev
         echo REACT_APP_MOCK_API=false >> .env.dev
-        cat .env
+        cat .env.dev
 
     - name: Build
       id: build-image
