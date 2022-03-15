@@ -4,50 +4,49 @@ name: Deploy demo-app to S3
 on:
  
   # Triggers the workflow on push or pull request events but only for the master branch
-  push:
-    branches: [ master ]
-    tags: 
-      - .*
-  pull_request:
-    branches: [master]
+  # push:
+  #   branches: [ master ]
+  #   tags: 
+  #     - .*
+  # pull_request:
+  #   branches: [master]
   
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-env:
-  AWS_REGION: eu-central-1        
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  deploy-dev:
     name: Build and Deploy Image
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    env:
+      # default build directory
+      BUILD_FOLDER: 'build/'
+      VERSION: 'latest'
+
+      # rename necessary variables used in the app
+      REACT_APP_VERSION: 'latest'
+      AWS_REGION: eu-central-1        
     
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: Check out code
       uses: actions/checkout@v2
       
-    - name: Set Tag Number
-      id: tag-number
-      run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+    # - name: Set Tag Number
+    #   id: tag-number
+    #   run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
       
-    - name: Check Tag Release
-      env:
-          RELEASE_VERSION: ${{ steps.tag-number.outputs.tag }}
-      run: |
-          echo $RELEASE_VERSION
-          echo ${{ steps.vars.outputs.tag }}
-          
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-    
+    # - name: Check Tag Release
+    #   env:
+    #       RELEASE_VERSION: ${{ steps.tag-number.outputs.tag }}
+    #   run: |
+    #       echo $RELEASE_VERSION
+    #       echo ${{ steps.vars.outputs.tag }}
+
     - name: Setup node
       id: setup-node
       uses: actions/setup-node@v2
@@ -60,6 +59,14 @@ jobs:
       run: |
         npm install
         npm run build
+          
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
 
     - name: S3 Sync
       id: sync-s3
@@ -67,14 +74,12 @@ jobs:
       with:
         args: --acl public-read --follow-symlinks --delete
       env:
-        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_NAME }}
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_NAME }}/bacc739a-9f84-4b6e-adb8-e2e47d0d5176
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ env.AWS_REGION }}
         SOURCE_DIR: "build"
 
     - name: Invalidate CloudFront distribution
-      run: aws cloudfront create-invalidation --distribution-id ENO5FQ7ATVY1U --paths "/*"
-
-
+      run: aws cloudfront create-invalidation --distribution-id {{ secrets.DEMO_APP_CLOUDFRONT_DISTRIBUTION }} --paths "bacc739a-9f84-4b6e-adb8-e2e47d0d5176/*"
 
