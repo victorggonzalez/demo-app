@@ -54,7 +54,7 @@ jobs:
         node-version: '14'
         check-latest: true
 
-    - name: Build
+    - name: Build image
       id: build-image
       run: |
         npm install
