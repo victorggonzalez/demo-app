@@ -1,0 +1,37 @@
+name: CD S3 reusable repo
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    tags:
+      - v*
+
+jobs:
+  dispatch:
+    name: Update staging versions
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set tag job
+      id: set-tag
+      run: |
+        COMMIT=$(git rev-list --tags --max-count=1)
+        TAG=$(git describe --tags $COMMIT)
+        REPOSITORY=$(echo '${{ github.repository }}')
+        REPOSITORY_NAME=$(echo $REPOSITORY | awk -F '/' '{print $2}')
+        echo $TAG
+        echo $REPOSITORY_NAME
+        JSON=$(jq --null-input --arg repo "$REPOSITORY" --arg tag "$TAG" '{"repo": $repo, "tag": $tag}')
+        echo $JSON
+        echo ::set-output name=json::${JSON//'%'/'%25'}
+
+    - name: Repository Dispatch
+      uses: peter-evans/repository-dispatch@v2
+      with:
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        repository: victorggonzalez/workflows
+        event-type: update-staging-version
+        client-payload: ${{steps.set-tag.outputs.json}}
