@@ -9,6 +9,9 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and try to test how this works to in this test app testing invalidations. 
         </p>
+        <p>
+          new paragraph
+        </p>
         <a
           className="App-link"
           href="https://reactjs.org"
