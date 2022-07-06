@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/victorggonzalez/demo-app/compare/v0.1.3...v0.1.4) (2022-07-06)
+
+
+### Bug Fixes
+
+* remove unused ([4190bef](https://github.com/victorggonzalez/demo-app/commit/4190bef5e7ab74f61a27d2d3e5d00e56adf98f60))
+
 ### [0.1.3](https://github.com/victorggonzalez/demo-app/compare/v0.1.2...v0.1.3) (2022-07-06)
 
 
