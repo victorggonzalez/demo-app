@@ -7,7 +7,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to in this test app testing invalidations. 
+          Edit <code>src/App.js</code> and try to test how this works to in this test app testing invalidations. 
         </p>
         <a
           className="App-link"
