@@ -1,6 +1,6 @@
 {
   "name": "demo-app",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.2",
@@ -21,7 +21,7 @@
     "eject": "react-scripts eject",
     "deploy:live": "npm run build && aws s3 sync dist/s3://demo-app.test.com --delete && npm run-script invalidate-cache:live",
     "invalidate-cache:live": "aws configure set preview.cloudfront true && aws cloudfront create-invalidation --distribution-id <CLOUDFRONT_DISTRIBUTION_ID> --paths '/*'",
-    "release": "standard-version",
+    "release": "git fetch --tags && git add CHANGELOG.md && standard-version -a",
     "release:first": "standard-version -a --first-release",
     "release:minor": "git fetch --tags && git add CHANGELOG.md && standard-version -a --release-as minor",
     "release:major": "standard-version -a --release-as major"
